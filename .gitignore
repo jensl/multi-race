@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.certs/
+*.local
+.DS_Store
+
+# Deploy target (bucket + CloudFront distribution). See .env.example.
+.env

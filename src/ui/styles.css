@@ -1,0 +1,532 @@
+/*
+ * The whole app's styling, in one file.
+ *
+ * Mobile-first and portrait-first, because the target is a phone held in one
+ * hand with a thumb on the keypad. Three things earn their keep throughout:
+ * `touch-action: manipulation` (kills the double-tap-zoom delay, which is very
+ * noticeable when tapping scan, aiming, and tapping again), `min-height: 48px`
+ * on anything tappable, and `dvh` rather than `vh` so the Android URL bar
+ * cannot push the keypad off the bottom of the screen.
+ */
+
+:root {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --panel: #161b22;
+  --raised: #21262d;
+  --line: #30363d;
+  --text: #e6edf3;
+  --dim: #8b949e;
+  --accent: #2f81f7;
+  --ok: #3fb950;
+  --bad: #f85149;
+  --warn: #d29922;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Every screen is a full-height column; the game screen uses this to pin its
+   keypad to the bottom without a fixed position. */
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+/* ---------------------------------------------------------------- furniture */
+
+h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  margin: 0 0 4px;
+}
+
+.sub {
+  color: var(--dim);
+  font-size: 14px;
+  margin: 0;
+}
+
+.hint {
+  color: var(--dim);
+  font-size: 14px;
+  margin: 0;
+}
+
+.status {
+  color: var(--dim);
+  font-size: 14px;
+  margin: 0;
+  min-height: 1.5em;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  width: 100%;
+  min-height: 48px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button.secondary {
+  background: var(--raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--dim);
+  font-weight: 500;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ------------------------------------------------------------- mode select */
+
+.modes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode {
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mode .name {
+  font-size: 17px;
+}
+
+.mode .blurb {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+/* ------------------------------------------------------------------- forms */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 13px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.name-input {
+  font: inherit;
+  /* 16px minimum: anything smaller makes Android Chrome zoom the page on focus,
+     which then leaves the layout scrolled sideways. */
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  min-height: 48px;
+  width: 100%;
+}
+
+.name-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------------------------------------------------------------- ceremony */
+
+.ceremony {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.qr {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.qr canvas {
+  /* Stops the browser smoothing module edges into grey, which is the
+     difference between a code that scans instantly and one that does not. */
+  image-rendering: pixelated;
+  border-radius: 6px;
+  max-width: 100%;
+}
+
+.camera {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 46dvh;
+  border-radius: var(--radius);
+  background: #000;
+  display: block;
+  /* Fills the box rather than letterboxing, so the code can be held close. */
+  object-fit: cover;
+}
+
+.camera[hidden],
+.qr[hidden] {
+  display: none;
+}
+
+.expiry,
+.flash {
+  font-size: 14px;
+  margin: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.flash {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #12233d;
+  border: 1px solid var(--accent);
+}
+
+.flash.bad {
+  background: #2d1214;
+  border-color: var(--bad);
+}
+
+/* -------------------------------------------------------------- game screen */
+
+.game {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+  /* Scrolls rather than clips. On a short screen the keypad may slide, which is
+     a far better outcome than controls that cannot be reached at all. */
+  overflow-y: auto;
+}
+
+.exit-row {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+
+.exit-key {
+  width: auto;
+  min-height: 40px;
+  padding: 4px 18px;
+  font-size: 14px;
+}
+
+.game-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.game-round {
+  font-variant-numeric: tabular-nums;
+}
+
+.timer {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--raised);
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  background: var(--accent);
+  /* scaleX from the left, so a frame costs no layout. */
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+
+.timer.urgent .timer-fill {
+  background: var(--bad);
+}
+
+.game-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  /* Deliberately not `min-height: 0`. With that, a short viewport -- and Android
+     Chrome's URL bar makes every viewport shorter -- lets this collapse to
+     nothing to make room for the keypad, and the question silently disappears
+     while the game carries on around it. The keypad scrolling out of reach on a
+     very short screen is the better failure: `.game` scrolls. */
+  min-height: 9rem;
+}
+
+.problem {
+  font-size: clamp(34px, 12vw, 52px);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.answer {
+  font-size: clamp(30px, 11vw, 46px);
+  font-weight: 700;
+  margin: 0;
+  min-height: 1.2em;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+
+.answer.empty::after {
+  content: '—';
+  color: var(--line);
+}
+
+/* A wrong answer shakes and never reveals anything; the correct answer only
+   appears when the round is over. */
+.game-body.wrong {
+  animation: shake 0.4s;
+}
+
+.game-body.wrong .answer {
+  color: var(--bad);
+}
+
+.game-body.correct .answer {
+  color: var(--ok);
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-9px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-body.wrong {
+    animation: none;
+  }
+}
+
+.scores {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.score {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.score.self {
+  color: var(--text);
+}
+
+.score.done {
+  color: var(--ok);
+  background: #0f2f1a;
+}
+
+.score-points {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------ keypad */
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.keypad.disabled {
+  opacity: 0.45;
+}
+
+.key {
+  font-size: 24px;
+  font-weight: 600;
+  min-height: 58px;
+  padding: 0;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.key.back {
+  color: var(--dim);
+}
+
+.key.submit {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #04150a;
+}
+
+/* ---------------------------------------------------------------- results */
+
+.standings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.standing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.standing.self {
+  border-color: var(--accent);
+}
+
+.standing .place {
+  font-size: 18px;
+  width: 1.6em;
+  text-align: center;
+}
+
+.standing .who {
+  flex: 1;
+}
+
+.standing .total {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.standing.gold {
+  background: #2a2411;
+  border-color: var(--warn);
+}
+
+.banner {
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.banner.bad {
+  background: #2d1214;
+  border: 1px solid var(--bad);
+  color: var(--text);
+}
+
+.banner.info {
+  background: #12233d;
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
